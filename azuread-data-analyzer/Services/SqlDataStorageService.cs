@@ -19,11 +19,40 @@ namespace azuread_data_analyzer.Services
 
         public async Task Insert<T>(string destination, IEnumerable<T> data)
         {
+            int tryCount = 0;
+            int maxRetries = 5;
+            bool isSuccessful = false;
+            do
+            {
+                try
+                {
+                    InsertToTable(destination, data);
+                    isSuccessful = true;
+                }
+                catch (SqlException ex)
+                {
+                    isSuccessful = false;
+                    if (ex.Number == -2) // Is a timeout, retry
+                    {
+                        tryCount++;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            } while (isSuccessful == false && tryCount < maxRetries);
+           
+        }
+
+        private void InsertToTable<T>(string destination, IEnumerable<T> data)
+        {
             var connectionString = _configurationService.Get(ConfigurationNames.SqlConnectionString);
             using var connection = new SqlConnection(connectionString);
             connection.Open();
 
             var dataAsTable = ToDataTable(connection, destination, data);
+
 
             using var bulk = new SqlBulkCopy(connection);
             bulk.DestinationTableName = destination;
