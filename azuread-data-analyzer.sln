@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azuread-data-analyzer.console", "azuread-data-analyzer.console\azuread-data-analyzer.console.csproj", "{ACA6A748-73FD-4122-9BAA-2F375EDCF2CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azuread-data-analyzer", "azuread-data-analyzer\azuread-data-analyzer.csproj", "{6C83DB7D-B1CC-49BB-BCED-88A12BBAF011}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACA6A748-73FD-4122-9BAA-2F375EDCF2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA6A748-73FD-4122-9BAA-2F375EDCF2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA6A748-73FD-4122-9BAA-2F375EDCF2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA6A748-73FD-4122-9BAA-2F375EDCF2CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C83DB7D-B1CC-49BB-BCED-88A12BBAF011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C83DB7D-B1CC-49BB-BCED-88A12BBAF011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C83DB7D-B1CC-49BB-BCED-88A12BBAF011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C83DB7D-B1CC-49BB-BCED-88A12BBAF011}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B1AE48C4-AB80-414F-9B1D-D8800A21752B}
+	EndGlobalSection
+EndGlobal
