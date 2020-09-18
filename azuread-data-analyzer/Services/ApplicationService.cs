@@ -15,7 +15,7 @@ namespace azuread_data_analyzer.Services
         {
             _graphClientFactory = graphClientFactory;
         }
-        public async Task Get(Action<ICollection<Application>> pageAction = null)
+        public async Task Get(Action<ICollection<Application>,int> pageAction = null)
         {
             var client = _graphClientFactory.Create();
 
@@ -24,14 +24,15 @@ namespace azuread_data_analyzer.Services
                 .Select("id,appId,createdDateTime,description,displayName,signInAudience,tags,appRoles")
                 .Top(999);
 
+            int pageNumber = 1;
             do
             {
                 var result = await request.GetAsync();
 
-                pageAction?.Invoke(result.CurrentPage);
-                break;
+                pageAction?.Invoke(result.CurrentPage,pageNumber);
 
                 request = result.NextPageRequest;
+                pageNumber++;
 
             } while (request != null);
 

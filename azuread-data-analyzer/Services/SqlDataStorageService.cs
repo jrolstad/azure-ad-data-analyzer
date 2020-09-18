@@ -29,17 +29,15 @@ namespace azuread_data_analyzer.Services
                     InsertToTable(destination, data);
                     isSuccessful = true;
                 }
-                catch (SqlException ex)
+                catch
                 {
                     isSuccessful = false;
-                    if (ex.Number == -2) // Is a timeout, retry
-                    {
-                        tryCount++;
-                    }
-                    else
+                    if(tryCount>maxRetries)
                     {
                         throw;
                     }
+                    tryCount++;
+                   
                 }
             } while (isSuccessful == false && tryCount < maxRetries);
            
