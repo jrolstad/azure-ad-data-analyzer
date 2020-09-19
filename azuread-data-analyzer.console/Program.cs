@@ -1,4 +1,5 @@
 ﻿using azuread_data_analyzer.Managers;
+using azuread_data_analyzer.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace azuread_data_analyzer.console
                 var manager = serviceProvider.GetService<DataManager>();
 
                 //var appTask = manager.ProcessApplications(Console.Out);
-                var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, "Application");
+                var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Legacy);
 
                 await Task.WhenAll(servicePrincipalTask);
 
