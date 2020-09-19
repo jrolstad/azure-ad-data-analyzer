@@ -19,18 +19,17 @@ namespace azuread_data_analyzer.console
 
                 var manager = serviceProvider.GetService<DataManager>();
 
-                var appTask = manager.ProcessApplications();
-                var servicePrincipalTask = manager.ProcessServicePrincipals();
+                //var appTask = manager.ProcessApplications(Console.Out);
+                var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, "Application");
 
-                await Task.WhenAll(appTask, servicePrincipalTask);
+                await Task.WhenAll(servicePrincipalTask);
+
+                Console.WriteLine("Complete");
             }
             catch(Exception ex)
             {
+                Console.WriteLine("Error");
                 Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                Console.ReadLine();
             }
             
         }

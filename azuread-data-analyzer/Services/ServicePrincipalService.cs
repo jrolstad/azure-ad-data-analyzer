@@ -15,7 +15,7 @@ namespace azuread_data_analyzer.Services
             _graphClientFactory = graphClientFactory;
         }
 
-        public async Task Get(Action<ICollection<ServicePrincipal>,int> pageAction=null)
+        public async Task Get(Action<ICollection<ServicePrincipal>,int> pageAction=null, string servicePrincipalType = null)
         {
             var client = _graphClientFactory.Create();
 
@@ -23,6 +23,12 @@ namespace azuread_data_analyzer.Services
                 .Request()
                 .Select("id,appId,displayName,signInAudience,servicePrincipalType,accountEnabled,appRoleAssignmentRequired,tags,appRoles")
                 .Top(999);
+
+            if(!string.IsNullOrWhiteSpace(servicePrincipalType))
+            {
+                request = request.Filter($"servicePrincipalType eq '{servicePrincipalType}'");
+            }
+            
             int pageNumber = 1;
             do
             {

@@ -28,9 +28,9 @@ namespace azuread_data_analyzer.Managers
             return _applicationService.Get(async (data,pageCount) => await InsertData("Applications", data, statusWriter,pageCount));
         }
 
-        public Task ProcessServicePrincipals(TextWriter statusWriter)
+        public Task ProcessServicePrincipals(TextWriter statusWriter, string servicePrincipalType)
         {
-            return _servicePrincipalService.Get(async (data, pageCount) => await InsertData("ServicePrincipals", data, statusWriter, pageCount));
+            return _servicePrincipalService.Get(async (data, pageCount) => await InsertData("ServicePrincipals", data, statusWriter, pageCount), servicePrincipalType);
         }
 
         private async Task InsertData<T>(string destination,IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T: Entity
