@@ -18,7 +18,7 @@ namespace azuread_data_analyzer.Services
             _clientFactory = clientFactory;
         }
 
-        public async Task Insert<T>(string destination, IEnumerable<T> data)
+        public async Task Insert<T>(string destination, IEnumerable<T> data, string parentId = null, string parentType = null)
         {
             if (_bulkExecutor == null)
             {
@@ -28,6 +28,16 @@ namespace azuread_data_analyzer.Services
             var typedData = data.Cast<object>();
 
             await _bulkExecutor.BulkImportAsync(typedData, enableUpsert: true, disableAutomaticIdGeneration: true);
+        }
+
+        public ICollection<string> GetApplications()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<string> GetServicePrincipals()
+        {
+            throw new NotImplementedException();
         }
     }
 }

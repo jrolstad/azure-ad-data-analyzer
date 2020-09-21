@@ -33,6 +33,26 @@ namespace azuread_data_analyzer.Managers
             return _servicePrincipalService.Get(async (data, pageCount) => await InsertData("ServicePrincipals", data, statusWriter, pageCount), servicePrincipalType);
         }
 
+        public Task ProcessApplicationOwners(TextWriter statusWriter)
+        {
+            var applications = _dataStorageService.GetApplications();
+            var applicationOwnerTasks = applications
+                .Select(a => _applicationService.GetOwners(a, async (data, pageCount) => await InsertChildData(a,"Application","Owners", data, statusWriter, pageCount)))
+                .ToArray();
+
+            return Task.WhenAll(applicationOwnerTasks);
+        }
+
+        public Task ProcessServicePrincipalOwners(TextWriter statusWriter)
+        {
+            var applications = _dataStorageService.GetApplications();
+            var applicationOwnerTasks = applications
+                .Select(a => _applicationService.GetOwners(a, async (data, pageCount) => await InsertChildData(a, "Application", "Owners", data, statusWriter, pageCount)))
+                .ToArray();
+
+            return Task.WhenAll(applicationOwnerTasks);
+        }
+
         private async Task InsertData<T>(string destination,IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T: Entity
         {
             try
@@ -45,6 +65,25 @@ namespace azuread_data_analyzer.Managers
                 var identitifiers = string.Join(",", data?.Select(d => d.Id));
 
                 var exception = new Exception("Error when inserting data",ex);
+                exception.Data.Add("destination", destination);
+                exception.Data.Add("identitifiers", identitifiers);
+
+                throw exception;
+            }
+        }
+
+        private async Task InsertChildData<T>(string parentId, string parentType, string destination, IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T : Entity
+        {
+            try
+            {
+                statusWriter.WriteLine($"Inserting {destination} data for page {pageCount}");
+                await _dataStorageService.Insert(destination, data,parentId,parentType);
+            }
+            catch (Exception ex)
+            {
+                var identitifiers = string.Join(",", data?.Select(d => d.Id));
+
+                var exception = new Exception("Error when inserting data", ex);
                 exception.Data.Add("destination", destination);
                 exception.Data.Add("identitifiers", identitifiers);
 

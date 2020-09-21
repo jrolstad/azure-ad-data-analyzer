@@ -15,6 +15,29 @@ namespace azuread_data_analyzer.Services
             _graphClientFactory = graphClientFactory;
         }
 
+        public async Task GetOwners(string id, Action<ICollection<DirectoryObject>, int> pageAction = null)
+        {
+            var client = _graphClientFactory.Create();
+
+            var request = client.ServicePrincipals[id]
+                .Owners
+                .Request()
+                .Select("id,userPrincipalName,displayName,onPremisesImmutableId,onPremisesSamAccountName,deletedDateTime,accountEnabled")
+                .Top(999);
+
+            int pageNumber = 1;
+            do
+            {
+                var result = await request.GetAsync();
+
+                pageAction?.Invoke(result.CurrentPage, pageNumber);
+
+                request = result.NextPageRequest;
+                pageNumber++;
+
+            } while (request != null);
+        }
+
         public async Task Get(Action<ICollection<ServicePrincipal>,int> pageAction=null, string servicePrincipalType = null)
         {
             var client = _graphClientFactory.Create();

@@ -7,6 +7,9 @@ namespace azuread_data_analyzer.Services
 {
     public interface IDataStorageService
     {
-        Task Insert<T>(string destination, IEnumerable<T> data);
+        Task Insert<T>(string destination, IEnumerable<T> data, string parentId = null, string parentType = null);
+
+        ICollection<string> GetApplications();
+        ICollection<string> GetServicePrincipals();
     }
 }
