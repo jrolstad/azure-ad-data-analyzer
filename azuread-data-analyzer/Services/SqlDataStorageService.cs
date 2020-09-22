@@ -30,7 +30,7 @@ namespace azuread_data_analyzer.Services
             {
                 try
                 {
-                    InsertToTable(destination, data,parentId,parentType);
+                    InsertToTable(destination, data);
                     isSuccessful = true;
                 }
                 catch(Exception ex)
@@ -47,13 +47,13 @@ namespace azuread_data_analyzer.Services
            
         }
 
-        private void InsertToTable<T>(string destination, IEnumerable<T> data, string parentId, string parentType)
+        private void InsertToTable<T>(string destination, IEnumerable<T> data)
         {
             var connectionString = _configurationService.Get(ConfigurationNames.SqlConnectionString);
             using var connection = new SqlConnection(connectionString);
             connection.Open();
 
-            var dataAsTable = ToDataTable(connection, destination, data,parentId, parentType);
+            var dataAsTable = ToDataTable(connection, destination, data);
 
 
             using var bulk = new SqlBulkCopy(connection);
@@ -63,7 +63,7 @@ namespace azuread_data_analyzer.Services
             connection.Close();
         }
 
-        private DataTable ToDataTable<T>(SqlConnection connection, string tableName, IEnumerable<T> data, string parentId, string parentType)
+        private DataTable ToDataTable<T>(SqlConnection connection, string tableName, IEnumerable<T> data)
         {
             var table = new DataTable();
             using (var adapter = new SqlDataAdapter($"SELECT TOP 0 * FROM {tableName}", connection))
@@ -73,14 +73,14 @@ namespace azuread_data_analyzer.Services
 
             foreach (var element in data)
             {
-                var row = MapToDataRow(tableName,table, element, parentId, parentType);
+                var row = MapToDataRow(table, element);
                 table.Rows.Add(row);
             }
 
             return table;
         }
 
-        private DataRow MapToDataRow<T>(string tableName, DataTable table, T toMap,string parentId, string parentType)
+        private DataRow MapToDataRow<T>(DataTable table, T toMap)
         {
             if (typeof(T) == typeof(Application))
             {
@@ -116,30 +116,14 @@ namespace azuread_data_analyzer.Services
 
                 return row;
             }
-            else if (tableName == "Owners")
+            else if (typeof(T) == typeof(ObjectOwner))
             {
                 var row = table.NewRow();
-
-                if (toMap is User userData)
-                {
-                    row["objectId"] = parentId.Left(250);
-                    row["objectType"] = parentType.Left(250);
-                    row["ownerType"] = userData.ODataType.Left(250);
-                    row["principalId"] = userData.Id.Left(250);
-                    row["deletedDateTime"] = (userData.DeletedDateTime?.ToString() ?? "").Left(250);
-                    row["accountEnabled"] = userData.AccountEnabled.GetValueOrDefault() ? 1 : 0;
-                    row["userPrincipalName"] = userData.UserPrincipalName.Left(250);
-                    row["personnelNumber"] = userData.OnPremisesImmutableId.Left(250);
-                }
-
-                if (toMap is Group groupData)
-                {
-                    row["objectId"] = parentId.Left(250);
-                    row["objectType"] = parentType.Left(250);
-                    row["ownerType"] = groupData.ODataType.Left(250);
-                    row["principalId"] = groupData.Id.Left(250);
-                    row["deletedDateTime"] = (groupData.DeletedDateTime?.ToString() ?? "").Left(250);
-                }
+                var item = toMap as ObjectOwner;
+                row["objectId"] = item.ParentId.Left(250);
+                row["objectType"] = item.ParentId.Left(250);
+                row["ownerType"] = item.Owner.ODataType.Left(250);
+                row["principalId"] = item.Owner.Id.Left(250);
 
                 return row;
             }
@@ -149,43 +133,6 @@ namespace azuread_data_analyzer.Services
             }
         }
 
-        public ICollection<string> GetApplications()
-        {
-            var connectionString = _configurationService.Get(ConfigurationNames.SqlConnectionString);
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            using var command = new SqlCommand("Select id from Applications",connection);
-            using var reader = command.ExecuteReader();
-            var data = new List<string>();
-            while(reader.Read())
-            {
-                data.Add(reader.GetString(0));
-            }
-            reader.Close();
-            connection.Close();
-
-            return data;
-        }
-
-        public ICollection<string> GetServicePrincipals()
-        {
-            var connectionString = _configurationService.Get(ConfigurationNames.SqlConnectionString);
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-
-            using var command = new SqlCommand("Select id from ServicePrincipals",connection);
-            using var reader = command.ExecuteReader();
-            var data = new List<string>();
-            while (reader.Read())
-            {
-                data.Add(reader.GetString(0));
-            }
-            reader.Close();
-            connection.Close();
-
-            return data;
-        }
     }
 
     public static class StringExtensions

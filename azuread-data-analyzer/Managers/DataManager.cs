@@ -1,4 +1,5 @@
-﻿using azuread_data_analyzer.Services;
+﻿using azuread_data_analyzer.Models;
+using azuread_data_analyzer.Services;
 using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
@@ -35,22 +36,12 @@ namespace azuread_data_analyzer.Managers
 
         public Task ProcessApplicationOwners(TextWriter statusWriter)
         {
-            var applications = _dataStorageService.GetApplications();
-            var applicationOwnerTasks = applications
-                .Select(a => _applicationService.GetOwners(a, async (data, pageCount) => await InsertChildData(a,"Application","Owners", data, statusWriter, pageCount)))
-                .ToArray();
-
-            return Task.WhenAll(applicationOwnerTasks);
+            return _applicationService.GetOwners(async (data, pageCount) => await InsertChildData("Owners", data, statusWriter, pageCount));
         }
 
-        public Task ProcessServicePrincipalOwners(TextWriter statusWriter)
+        public Task ProcessServicePrincipalOwners(TextWriter statusWriter, string servicePrincipalType)
         {
-            var applications = _dataStorageService.GetApplications();
-            var applicationOwnerTasks = applications
-                .Select(a => _applicationService.GetOwners(a, async (data, pageCount) => await InsertChildData(a, "Application", "Owners", data, statusWriter, pageCount)))
-                .ToArray();
-
-            return Task.WhenAll(applicationOwnerTasks);
+            return _servicePrincipalService.GetOwners(async (data, pageCount) => await InsertChildData("Owners", data, statusWriter, pageCount),servicePrincipalType);
         }
 
         private async Task InsertData<T>(string destination,IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T: Entity
@@ -72,12 +63,71 @@ namespace azuread_data_analyzer.Managers
             }
         }
 
-        private async Task InsertChildData<T>(string parentId, string parentType, string destination, IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T : Entity
+        private async Task InsertChildData<T>(string destination, IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T : Entity
         {
             try
             {
                 statusWriter.WriteLine($"Inserting {destination} data for page {pageCount}");
-                await _dataStorageService.Insert(destination, data,parentId,parentType);
+
+                switch (destination) {
+                    case "Owners":
+                    {
+                            switch (data){
+                                case IEnumerable<Application>:{
+                                    var owners = data
+                                        .Cast<Application>()
+                                        .Where(a=>a.Owners.Any())
+                                        .Select(a =>
+                                        {
+                                            var ownerData = new List<ObjectOwner>();
+                                            foreach (var owner in a.Owners)
+                                            {
+                                                ownerData.Add(new ObjectOwner
+                                                {
+                                                    Owner = owner,
+                                                    ParentId = a.Id,
+                                                    ParentType = a.ODataType
+                                                });
+                                            }
+
+                                            return ownerData;
+                                        })
+                                        .SelectMany(o=>o)
+                                        .Where(o => o.Owner?.Id != null);
+                                        await _dataStorageService.Insert(destination, owners);
+                                        break;
+                                    }
+                                case IEnumerable<ServicePrincipal>: {
+                                var owners = data
+                                .Cast<ServicePrincipal>()
+                                .Where(a => a.Owners.Any())
+                                .Select(a =>
+                                {
+                                    var ownerData = new List<ObjectOwner>();
+                                    foreach (var owner in a.Owners)
+                                    {
+                                        ownerData.Add(new ObjectOwner
+                                        {
+                                            Owner = owner,
+                                            ParentId = a.Id,
+                                            ParentType = a.ODataType
+                                        });
+                                    }
+
+                                    return ownerData;
+                                })
+                                .SelectMany(o => o)
+                                .Where(o=>o.Owner?.Id!=null);
+                                    await _dataStorageService.Insert(destination, owners);
+                                    break;
+                            }
+                                default: throw new ArgumentOutOfRangeException(nameof(T));
+                            }
+                            break;
+                    }
+                    default: throw new ArgumentOutOfRangeException(nameof(destination));
+                }
+                
             }
             catch (Exception ex)
             {

@@ -30,14 +30,5 @@ namespace azuread_data_analyzer.Services
             await _bulkExecutor.BulkImportAsync(typedData, enableUpsert: true, disableAutomaticIdGeneration: true);
         }
 
-        public ICollection<string> GetApplications()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<string> GetServicePrincipals()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
