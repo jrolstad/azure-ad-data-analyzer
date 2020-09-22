@@ -18,7 +18,7 @@ namespace azuread_data_analyzer.Services
             _clientFactory = clientFactory;
         }
 
-        public async Task Insert<T>(string destination, IEnumerable<T> data, string parentId = null, string parentType = null)
+        public async Task Insert<T>(string destination, IEnumerable<T> data)
         {
             if (_bulkExecutor == null)
             {

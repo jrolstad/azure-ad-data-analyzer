@@ -19,7 +19,7 @@ namespace azuread_data_analyzer.Services
             _configurationService = configurationService;
         }
 
-        public async Task Insert<T>(string destination, IEnumerable<T> data, string parentId = null, string parentType = null)
+        public async Task Insert<T>(string destination, IEnumerable<T> data)
         {
             if (data == null || !data.Any()) return;
 
@@ -124,6 +124,23 @@ namespace azuread_data_analyzer.Services
                 row["objectType"] = item.ParentId.Left(250);
                 row["ownerType"] = item.Owner.ODataType.Left(250);
                 row["principalId"] = item.Owner.Id.Left(250);
+
+                return row;
+            }
+            else if (typeof(T) == typeof(ObjectAssignment))
+            {
+                var row = table.NewRow();
+                var item = toMap as ObjectAssignment;
+                row["objectId"] = item.ParentId.Left(250);
+                row["objectType"] = item.ParentId.Left(250);
+                row["id"] = item.Assignment.Id.Left(250);
+                row["creationTimestamp"] = item.Assignment.CreationTimestamp.ToString().Left(250);
+                row["appRoleId"] = item.Assignment.AppRoleId?.ToString();
+                row["principalDisplayName"] = item.Assignment.PrincipalDisplayName?.ToString();
+                row["principalId"] = item.Assignment.PrincipalId?.ToString();
+                row["principalType"] = item.Assignment.PrincipalType?.ToString();
+                row["resourceDisplayName"] = item.Assignment.ResourceDisplayName?.ToString();
+                row["resourceId"] = item.Assignment.ResourceId?.ToString();
 
                 return row;
             }

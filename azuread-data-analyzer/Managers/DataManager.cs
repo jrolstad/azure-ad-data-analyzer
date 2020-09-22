@@ -44,6 +44,11 @@ namespace azuread_data_analyzer.Managers
             return _servicePrincipalService.GetOwners(async (data, pageCount) => await InsertChildData("Owners", data, statusWriter, pageCount),servicePrincipalType);
         }
 
+        public Task ProcessServicePrincipalAppRoleAssignments(TextWriter statusWriter, string servicePrincipalType)
+        {
+            return _servicePrincipalService.GetAppRoleAssignments(async (data, pageCount) => await InsertChildData("AppRoleAssignment", data, statusWriter, pageCount), servicePrincipalType);
+        }
+
         private async Task InsertData<T>(string destination,IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T: Entity
         {
             try
@@ -70,8 +75,7 @@ namespace azuread_data_analyzer.Managers
                 statusWriter.WriteLine($"Inserting {destination} data for page {pageCount}");
 
                 switch (destination) {
-                    case "Owners":
-                    {
+                    case "Owners": {
                             switch (data){
                                 case IEnumerable<Application>:{
                                     var owners = data
@@ -125,6 +129,45 @@ namespace azuread_data_analyzer.Managers
                             }
                             break;
                     }
+                    case "AppRoleAssignment":
+                        {
+                            switch (data)
+                            {
+                                case IEnumerable<ServicePrincipal>:
+                                    {
+                                        var assignments = data
+                                                .Cast<ServicePrincipal>()
+                                                .Where(a => a.AppRoleAssignedTo.Any())
+                                                .Select(a =>
+                                                {
+                                                    var assignmentData = new List<ObjectAssignment>();
+                                                    foreach (var item in a.AppRoleAssignedTo)
+                                                    {
+                                                        assignmentData.Add(new ObjectAssignment
+                                                        {
+                                                            Assignment = item,
+                                                            ParentId = a.Id,
+                                                            ParentType = a.ODataType
+                                                        });
+                                                    }
+
+                                                    return assignmentData;
+                                                })
+                                                .SelectMany(o => o)
+                                                .Where(o => o.Assignment?.Id != null)
+                                                .ToList();
+
+                                        if(assignments.Any())
+                                        {
+                                            await _dataStorageService.Insert(destination, assignments);
+                                        }
+                                       
+                                        break;
+                                    }
+                                default: throw new ArgumentOutOfRangeException(nameof(T));
+                            }
+                            break;
+                        }
                     default: throw new ArgumentOutOfRangeException(nameof(destination));
                 }
                 

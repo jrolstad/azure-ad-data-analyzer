@@ -23,9 +23,11 @@ namespace azuread_data_analyzer.console
                 //var appTask = manager.ProcessApplications(Console.Out);
                 //var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Application);
                 //var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Legacy);
-                var ownerTask = manager.ProcessApplicationOwners(Console.Out);
+                var appOwnerTask = manager.ProcessApplicationOwners(Console.Out);
+                //var spOwnerTask = manager.ProcessServicePrincipalOwners(Console.Out, ServicePrincipalTypes.Application);
+                //var assignmentTask = manager.ProcessServicePrincipalAppRoleAssignments(Console.Out, ServicePrincipalTypes.Application);
 
-                await Task.WhenAll(ownerTask);
+                await Task.WhenAll(appOwnerTask);
                 Console.WriteLine("Complete");
             }
             catch(Exception ex)
