@@ -129,7 +129,7 @@ namespace azuread_data_analyzer.Managers
                             }
                             break;
                     }
-                    case "AppRoleAssignment":
+                    case "AppRoleAssignments":
                         {
                             switch (data)
                             {
