@@ -121,7 +121,7 @@ namespace azuread_data_analyzer.Services
                 var row = table.NewRow();
                 var item = toMap as ObjectOwner;
                 row["objectId"] = item.ParentId.Left(250);
-                row["objectType"] = item.ParentId.Left(250);
+                row["objectType"] = item.ParentType.Left(250);
                 row["ownerType"] = item.Owner.ODataType.Left(250);
                 row["principalId"] = item.Owner.Id.Left(250);
 
@@ -132,7 +132,7 @@ namespace azuread_data_analyzer.Services
                 var row = table.NewRow();
                 var item = toMap as ObjectAssignment;
                 row["objectId"] = item.ParentId.Left(250);
-                row["objectType"] = item.ParentId.Left(250);
+                row["objectType"] = item.ParentType.Left(250);
                 row["id"] = item.Assignment.Id.Left(250);
                 row["creationTimestamp"] = item.Assignment.CreationTimestamp.ToString().Left(250);
                 row["appRoleId"] = item.Assignment.AppRoleId?.ToString();

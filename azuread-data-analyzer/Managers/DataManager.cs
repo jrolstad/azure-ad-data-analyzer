@@ -46,7 +46,7 @@ namespace azuread_data_analyzer.Managers
 
         public Task ProcessServicePrincipalAppRoleAssignments(TextWriter statusWriter, string servicePrincipalType)
         {
-            return _servicePrincipalService.GetAppRoleAssignments(async (data, pageCount) => await InsertChildData("AppRoleAssignment", data, statusWriter, pageCount), servicePrincipalType);
+            return _servicePrincipalService.GetAppRoleAssignments(async (data, pageCount) => await InsertChildData("AppRoleAssignments", data, statusWriter, pageCount), servicePrincipalType);
         }
 
         private async Task InsertData<T>(string destination,IEnumerable<T> data, TextWriter statusWriter, int pageCount) where T: Entity

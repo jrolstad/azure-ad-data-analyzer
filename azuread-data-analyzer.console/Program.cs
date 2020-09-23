@@ -20,14 +20,17 @@ namespace azuread_data_analyzer.console
 
                 var manager = serviceProvider.GetService<DataManager>();
 
-                //var appTask = manager.ProcessApplications(Console.Out);
-                //var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Application);
-                //var servicePrincipalTask = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Legacy);
-                var appOwnerTask = manager.ProcessApplicationOwners(Console.Out);
-                //var spOwnerTask = manager.ProcessServicePrincipalOwners(Console.Out, ServicePrincipalTypes.Application);
-                //var assignmentTask = manager.ProcessServicePrincipalAppRoleAssignments(Console.Out, ServicePrincipalTypes.Application);
+                //var task = manager.ProcessApplications(Console.Out);
+                //var task = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Application);
+                //var task = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.Legacy);
+                //var task = manager.ProcessServicePrincipals(Console.Out, ServicePrincipalTypes.ManagedIdentity);
+                var task = manager.ProcessApplicationOwners(Console.Out);
+                //var task = manager.ProcessServicePrincipalOwners(Console.Out, ServicePrincipalTypes.Application);
+                //var task = manager.ProcessServicePrincipalOwners(Console.Out, ServicePrincipalTypes.Legacy);
+                //var task = manager.ProcessServicePrincipalAppRoleAssignments(Console.Out, ServicePrincipalTypes.Application);
+                //var task = manager.ProcessServicePrincipalAppRoleAssignments(Console.Out, ServicePrincipalTypes.Legacy);
 
-                await Task.WhenAll(appOwnerTask);
+                await Task.WhenAll(task);
                 Console.WriteLine("Complete");
             }
             catch(Exception ex)
