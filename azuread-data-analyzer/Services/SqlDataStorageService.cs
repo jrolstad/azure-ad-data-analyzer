@@ -96,7 +96,11 @@ namespace azuread_data_analyzer.Services
                 row["createdDateTimeMonth"] = item.CreatedDateTime?.Month ?? 0;
                 row["createdDateTimeDay"] = item.CreatedDateTime?.Day ?? 0;
                 row["deletedDateTime"] = (item.DeletedDateTime?.ToString() ?? "").Left(250);
-
+                row["hasWeb"] = item.Web.RedirectUris.Any() ? 1 : 0;
+                row["hasSpa"] = item.Spa.RedirectUris.Any() ? 1 : 0;
+                row["hasPublicClient"] = item.PublicClient.RedirectUris.Any() ? 1 : 0;
+                row["isFallbackPublicClient"] = item.IsFallbackPublicClient.GetValueOrDefault() ? 1 : 0;
+                row["isDeviceOnlyAuthSupported"] = item.IsDeviceOnlyAuthSupported.GetValueOrDefault() ? 1 : 0;
                 return row;
             }
             else if (typeof(T) == typeof(ServicePrincipal))

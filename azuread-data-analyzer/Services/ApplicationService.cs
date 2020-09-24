@@ -46,7 +46,7 @@ namespace azuread_data_analyzer.Services
 
             var request = client.Applications
                 .Request()
-                .Select("id,appId,createdDateTime,description,displayName,signInAudience,tags,appRoles")
+                .Select("id,appId,createdDateTime,description,displayName,signInAudience,tags,appRoles,web,spa,publicClient,isFallbackPublicClient,isDeviceOnlyAuthSupported")
                 .Top(999);
 
             int pageNumber = 1;
