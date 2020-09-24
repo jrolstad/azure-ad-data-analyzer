@@ -91,7 +91,7 @@ namespace azuread_data_analyzer.Services
                 row["appId"] = (item.AppId ?? "").Left(250);
                 row["displayName"] = (item.DisplayName ?? "").Left(250);
                 row["signInAudience"] = (item.SignInAudience ?? "").Left(250);
-                row["tags"] = (tagValue).Left(250);
+                row["tags"] = (tagValue).Left(1000);
                 row["createdDateTimeYear"] = item.CreatedDateTime?.Year ?? 0;
                 row["createdDateTimeMonth"] = item.CreatedDateTime?.Month ?? 0;
                 row["createdDateTimeDay"] = item.CreatedDateTime?.Day ?? 0;
@@ -115,7 +115,7 @@ namespace azuread_data_analyzer.Services
                 row["servicePrincipalType"] = (item.ServicePrincipalType ?? "").Left(250);
                 row["accountEnabled"] = item.AccountEnabled.GetValueOrDefault() ? 1 : 0;
                 row["appRoleAssignmentRequired"] = item.AppRoleAssignmentRequired.GetValueOrDefault() ? 1 : 0;
-                row["tags"] = (tagValue).Left(250);
+                row["tags"] = (tagValue).Left(1000);
                 row["deletedDateTime"] = (item.DeletedDateTime?.ToString() ?? "").Left(250);
 
                 return row;
